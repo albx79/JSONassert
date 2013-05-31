@@ -1,5 +1,6 @@
 package org.skyscreamer.jsonassert;
 
+import com.nebhale.jsonpath.JsonPath;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -47,14 +48,22 @@ public class JSONBehaviourTest {
 
     @Test
     public void whenPathMatchesInCustomizationThenCallCustomMatcher() throws JSONException {
-        Behavior behavior = STRICT.with(customization("first", comparator));
+        Behavior behavior = STRICT.with(customization("$.first", comparator));
         JSONCompareResult result = compareJSON(expected, actual, behavior);
         assertTrue(result.getMessage(),  result.passed());
     }
 
     @Test
     public void whenDeepPathMatchesCallCustomMatcher() throws JSONException {
-        Behavior behavior = STRICT.with(customization("outer.inner.value", comparator));
+        Behavior behavior = STRICT.with(customization("$.outer.inner.value", comparator));
+        JSONCompareResult result = compareJSON(deepExpected, deepActual, behavior);
+        assertTrue(result.getMessage(), result.passed());
+    }
+
+    @Test
+    public void canSpecifyAPathWithJsonPath() throws JSONException {
+        JsonPath path = JsonPath.compile("$..value");
+        Behavior behavior = STRICT.with(customization(path, comparator));
         JSONCompareResult result = compareJSON(deepExpected, deepActual, behavior);
         assertTrue(result.getMessage(), result.passed());
     }

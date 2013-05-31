@@ -15,6 +15,9 @@ import java.util.*;
  * non-JUnit test framework)
  */
 public class JSONCompare {
+
+    private static Map<JSONObject, EqualsComparator<Object>> customComparators = new HashMap<JSONObject, EqualsComparator<Object>>();
+
     private JSONCompare() {}
 
     /**
@@ -94,8 +97,9 @@ public class JSONCompare {
     private static void compareJSON(String prefix, JSONObject expected, JSONObject actual, Behavior behavior, JSONCompareResult result)
             throws JSONException
     {
+
         // Check that actual contains all the expected values
-	    for(String key : getKeys(expected)) {
+        for(String key : getKeys(expected)) {
             Object expectedValue = expected.get(key);
             if (actual.has(key)) {
                 Object actualValue = actual.get(key);
@@ -108,7 +112,7 @@ public class JSONCompare {
 
         // If non-extensible, check for vice-versa
         if (behavior.extraFieldsAre(DISALLOWED)) {
-	        for(String key : getKeys(actual)) {
+            for(String key : getKeys(actual)) {
                 if (!expected.has(key)) {
                     result.unexpected(prefix, key);
                 }
@@ -122,7 +126,7 @@ public class JSONCompare {
 
     private static void compareValues(String fullKey, Object expectedValue, Object actualValue, Behavior behavior, JSONCompareResult result) throws JSONException
     {
-        Customization customization = behavior.getCustomization(fullKey);
+        Customization customization = behavior.getCustomization(actualValue);
         if (customization != null) {
             if (!customization.matches(actualValue, expectedValue)) {
                 result.fail(fullKey, expectedValue, actualValue);

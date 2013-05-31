@@ -1,5 +1,7 @@
 package org.skyscreamer.jsonassert;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import static org.skyscreamer.jsonassert.Allowance.DISALLOWED;
 
 import java.util.Collection;
@@ -78,11 +80,14 @@ public final class Behavior {
 		return Builder.from(this).add(customization).build();
 	}
 
-    public Customization getCustomization(String path) {
-        for (Customization c : customizations) {
-            if (c.appliesToPath(path))
-                return c;
-        }
+    // TODO implement
+    Customization getCustomization(Object object) {
         return null;
+    }
+
+    void initializeCustomizations(Object jsonRoot) {
+        for (Customization c : customizations) {
+            c.getPath().read((JsonNode)jsonRoot, JsonNode.class);
+        }
     }
 }
